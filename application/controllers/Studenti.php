@@ -58,6 +58,50 @@ class Studenti extends CI_Controller
 		$this->load->view('templates/footer');
 	}
 
+	// aktualizacia dat o studentovi
+	public function edit($id){
+		$data = array();
+		//ziskanie dat z tabulky
+		$postData = $this->Studenti_model->ZobrazStudentov($id);
+
+		//zistenie, ci bola zaslana poziadavka na aktualizaciu
+		if($this->input->post('postSubmit')){
+			//definicia pravidiel validacie
+			$this->form_validation->set_rules('priezvisko', 'Zadajte priezvisko', 'required');
+			$this->form_validation->set_rules('meno', 'Zadajte meno', 'required');
+
+			// priprava dat pre aktualizaciu
+			$postData = array(
+				'priezvisko' => $this->input->post('priezvisko'),
+				'meno' => $this->input->post('meno')
+			);
+
+			//validacia zaslanych dat
+			if($this->form_validation->run() == true){
+				//aktualizacia dat
+				$update = $this->Studenti_model->update($postData, $id);
+
+				if($update){
+					$this->session->set_userdata('success_msg', 'Záznam o študentovi bol aktualizovaný.');
+					redirect('/studenti');
+				}else{
+					$data['error_msg'] = 'Nastal problém.';
+				}
+			}
+		}
+
+		//$data['users'] = $this->Temperatures_model->get_users_dropdown();
+		//	$data['users_selected'] = $postData['user'];
+		$data['post'] = $postData;
+		$data['title'] = 'Aktualizovať údaje';
+		$data['action'] = 'edit';
+
+		//zobrazenie formulara pre vlozenie a editaciu dat
+		$this->load->view('templates/header', $data);
+		$this->load->view('studenti/add-edit', $data);
+		$this->load->view('templates/footer');
+	}
+
 
 	// Zobrazenie detailu o studentovi
 	public function view($id){
