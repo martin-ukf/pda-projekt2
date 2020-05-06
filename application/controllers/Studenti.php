@@ -15,4 +15,23 @@ class Studenti extends CI_Controller
 		//nahratie zoznamu studentov
 		$this->load->view('studenti/index', $data);
 	}
+
+	// Zobrazenie detailu o studentovi
+	public function view($id){
+		$data = array();
+
+		//kontrola, ci bolo zaslane id riadka
+		if(!empty($id)){
+			$data['studenti'] = $this->Studenti_model->ZobrazStudentov($id);
+			$data['title'] = $data['studenti']['priezvisko'] . ' ' . $data['studenti']['meno'];
+
+			//nahratie detailu zaznamu
+			$this->load->view('templates/header', $data);
+			$this->load->view('studenti/view', $data);
+			$this->load->view('templates/footer');
+		}else{
+			redirect('/studenti');
+		}
+	}
+
 }
